@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= (product ? 'Edit' : 'Create') + ' Product - AscentAqua' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../../partials/header', { cartCount: cartCount || 0 }) %>
+    
+    <main>
+        <section class="product-form-page">
+            <div class="container">
+                <div class="admin-header">
+                    <h1><%= product ? 'Edit Product' : 'Create New Product' %></h1>
+                    <div class="admin-nav">
+                        <a href="/admin" class="nav-link">Dashboard</a>
+                        <a href="/admin/orders" class="nav-link">Orders</a>
+                        <a href="/admin/products" class="nav-link">Products</a>
+                        <a href="/" class="nav-link">View Site</a>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <form method="POST" action="<%= product ? `/admin/products/${product._id}` : '/admin/products' %>" class="product-form">
+                        <!-- Only show errors if they exist and are an array -->
+                        <% if (errors && Array.isArray(errors) && errors.length > 0) { %>
+                            <div class="alert alert-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <%= errors[0].msg %>
+                            </div>
+                        <% } %>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Product Name *</label>
+                                <input type="text" id="name" name="name" required
+                                       value="<%= product ? product.name : (formData && formData.name ? formData.name : '') %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Price ($) *</label>
+                                <input type="number" id="price" name="price" step="0.01" min="0" required
+                                       value="<%= product ? product.price : (formData && formData.price ? formData.price : '') %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea id="description" name="description" rows="4" required><%= product ? product.description : (formData && formData.description ? formData.description : '') %></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="capacity">Capacity *</label>
+                                <input type="text" id="capacity" name="capacity" required
+                                       value="<%= product ? product.capacity : (formData && formData.capacity ? formData.capacity : '') %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="material">Material *</label>
+                                <input type="text" id="material" name="material" required
+                                       value="<%= product ? product.material : (formData && formData.material ? formData.material : '') %>">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="weight">Weight</label>
+                                <input type="text" id="weight" name="weight"
+                                       value="<%= product ? product.weight : (formData && formData.weight ? formData.weight : '') %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="dimensions">Dimensions</label>
+                                <input type="text" id="dimensions" name="dimensions"
+                                       value="<%= product ? product.dimensions : (formData && formData.dimensions ? formData.dimensions : '') %>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="color">Color</label>
+                            <input type="text" id="color" name="color"
+                                   value="<%= product ? product.color : (formData && formData.color ? formData.color : '') %>">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="features">Features (comma-separated)</label>
+                            <input type="text" id="features" name="features"
+                                   value="<%= product ? (product.features ? product.features.join(', ') : '') : (formData && formData.features ? formData.features : '') %>"
+                                   placeholder="BPA Free, Recyclable, Eco-Friendly">
+                            <small>Separate multiple features with commas</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="image">Image URL</label>
+                                <input type="url" id="image" name="image"
+                                       value="<%= product ? product.image : (formData && formData.image ? formData.image : '') %>"
+                                       placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div class="form-group">
+                                <label for="inStock">Stock Status</label>
+                                <select id="inStock" name="inStock">
+                                    <option value="true" <%= (product && product.inStock) || (formData && formData.inStock === 'true') ? 'selected' : '' %>>In Stock</option>
+                                    <option value="false" <%= (product && !product.inStock) || (formData && formData.inStock === 'false') ? 'selected' : '' %>>Out of Stock</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="cta-button">
+                                <i class="fas fa-save"></i>
+                                <%= product ? 'Update Product' : 'Create Product' %>
+                            </button>
+                            <a href="/admin/products" class="btn-cancel">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../../partials/footer') %>
+    
+    <style>
+        .product-form-page {
+            padding: 120px 0 50px;
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .product-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #1a73e8;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group small {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-cancel {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions .cta-button,
+            .form-actions .btn-cancel {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <script>
+        // Convert features string to array on form submission
+        document.querySelector('.product-form').addEventListener('submit', function(e) {
+            const featuresInput = document.getElementById('features');
+            if (featuresInput && featuresInput.value) {
+                // This will be handled on the server side now
+                // featuresInput.value = featuresInput.value.split(',').map(f => f.trim()).filter(f => f);
+            }
+        });
+    </script>
+</body>
+</html>

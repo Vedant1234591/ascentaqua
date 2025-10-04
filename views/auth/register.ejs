@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body><%- include('../partials/header', { title: 'Register - AscentAqua' }) %>
+
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <h1>Create Account</h1>
+            <p>Join AscentAqua for better hydration</p>
+            
+            <% if (errors && errors.length > 0) { %>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <%= errors[0].msg %>
+                </div>
+            <% } %>
+            
+            <form method="POST" action="/register" class="auth-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required 
+                           value="<%= formData.name || '' %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required
+                           value="<%= formData.email || '' %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required
+                           value="<%= formData.phone || '' %>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required
+                           minlength="6">
+                    <small>Must be at least 6 characters long</small>
+                </div>
+                
+                <button type="submit" class="cta-button" style="width: 100%;">
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a href="/login">Sign in here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.auth-page {
+    padding: 120px 0 80px;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.auth-card h1 {
+    color: var(--secondary);
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.auth-card p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.auth-form {
+    text-align: left;
+}
+
+.auth-form small {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: block;
+}
+
+.auth-links {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.auth-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+</style>
+<script src="/js/auth.js"></script>
+<%- include('../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Messages - AscentAqua</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../../partials/header', { cartCount: cartCount }) %>
+    
+    <main>
+        <section class="admin-messages">
+            <div class="container">
+                <div class="admin-header">
+                    <h1>Customer Messages</h1>
+                    <div class="admin-nav">
+                        <a href="/admin" class="nav-link">Dashboard</a>
+                        <a href="/admin/orders" class="nav-link">Orders</a>
+                        <a href="/admin/products" class="nav-link">Products</a>
+                        <a href="/admin/messages" class="nav-link active">Messages</a>
+                        <a href="/" class="nav-link">View Site</a>
+                    </div>
+                </div>
+
+                <!-- Messages Table -->
+                <div class="messages-table-container">
+                    <div class="table-header">
+                        <h2>All Messages (<%= messages.length %>)</h2>
+                        <div class="table-actions">
+                            <input type="text" id="search-messages" placeholder="Search messages...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="messages-table">
+                            <thead>
+                                <tr>
+                                    <th>From</th>
+                                    <th>Email</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (messages.length > 0) { %>
+                                    <% messages.forEach(message => { %>
+                                        <tr class="message-row <%= message.status %>">
+                                            <td>
+                                                <strong><%= message.name %></strong>
+                                            </td>
+                                            <td>
+                                                <a href="mailto:<%= message.email %>"><%= message.email %></a>
+                                            </td>
+                                            <td class="message-preview">
+                                                <div class="message-text">
+                                                    <%= message.message.length > 100 ? message.message.substring(0, 100) + '...' : message.message %>
+                                                </div>
+                                                <% if (message.message.length > 100) { %>
+                                                    <button class="btn-read-more" data-message="<%= message.message %>">
+                                                        Read More
+                                                    </button>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <%= message.createdAt.toLocaleDateString() %>
+                                                <br>
+                                                <small><%= message.createdAt.toLocaleTimeString() %></small>
+                                            </td>
+                                            <td>
+                                                <select class="status-select" data-message-id="<%= message._id %>">
+                                                    <option value="unread" <%= message.status === 'unread' ? 'selected' : '' %>>Unread</option>
+                                                    <option value="read" <%= message.status === 'read' ? 'selected' : '' %>>Read</option>
+                                                    <option value="replied" <%= message.status === 'replied' ? 'selected' : '' %>>Replied</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="message-actions">
+                                                    <button class="btn-reply" onclick="replyToMessage('<%= message.email %>', '<%= message.name %>')">
+                                                        <i class="fas fa-reply"></i>
+                                                    </button>
+                                                    <button class="btn-delete" onclick="deleteMessage('<%= message._id %>')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="no-data">No messages found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="/admin/messages?page=<%= currentPage - 1 %>" class="page-link">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            <% } %>
+                            
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="/admin/messages?page=<%= i %>" 
+                                   class="page-link <%= i === currentPage ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/admin/messages?page=<%= currentPage + 1 %>" class="page-link">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../../partials/footer') %>
+    
+    <style>
+        .admin-messages {
+            padding: 120px 0 50px;
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .messages-table-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .message-row.unread {
+            background: #f0f8ff;
+            border-left: 4px solid #1a73e8;
+        }
+
+        .message-preview {
+            max-width: 300px;
+        }
+
+        .message-text {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .btn-read-more {
+            background: none;
+            border: none;
+            color: #1a73e8;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-reply, .btn-delete {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .btn-reply {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-reply:hover {
+            background: #218838;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Add to your existing admin styles */
+        .status-select {
+            padding: 6px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        // Update message status
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', async function() {
+                const messageId = this.dataset.messageId;
+                const status = this.value;
+                
+                try {
+                    const response = await fetch(`/admin/messages/${messageId}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Message status updated successfully!', 'success');
+                        // Update row appearance
+                        const row = this.closest('tr');
+                        row.className = `message-row ${status}`;
+                    } else {
+                        showNotification('Failed to update message status', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating message status:', error);
+                    showNotification('Error updating message status', 'error');
+                }
+            });
+        });
+
+        // Read more functionality
+        document.querySelectorAll('.btn-read-more').forEach(button => {
+            button.addEventListener('click', function() {
+                const fullMessage = this.dataset.message;
+                alert('Full Message:\n\n' + fullMessage);
+            });
+        });
+
+        function replyToMessage(email, name) {
+            const subject = `Re: Your message to AscentAqua`;
+            const body = `Dear ${name},\n\nThank you for contacting AscentAqua. `;
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+        }
+
+        async function deleteMessage(messageId) {
+            if (!confirm('Are you sure you want to delete this message?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/messages/${messageId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Message deleted successfully!', 'success');
+                    // Remove the row from the table
+                    const row = document.querySelector(`[data-message-id="${messageId}"]`)?.closest('tr');
+                    if (row) {
+                        row.remove();
+                    }
+                } else {
+                    showNotification('Failed to delete message', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                showNotification('Error deleting message', 'error');
+            }
+        }
+
+        // Search functionality
+        document.getElementById('search-messages').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.messages-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

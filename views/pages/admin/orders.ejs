@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - AscentAqua</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../../partials/header', { cartCount: cartCount }) %>
+    
+    <main>
+        <section class="admin-orders">
+            <div class="container">
+                <div class="admin-header">
+                    <h1>Manage Orders</h1>
+                    <div class="admin-nav">
+                        <a href="/admin" class="nav-link">Dashboard</a>
+                        <a href="/admin/orders" class="nav-link active">Orders</a>
+                        <a href="/admin/products" class="nav-link">Products</a>
+                        <a href="/" class="nav-link">View Site</a>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="orders-table-container">
+                    <div class="table-header">
+                        <h2>All Orders (<%= orders.length %>)</h2>
+                        <div class="table-actions">
+                            <input type="text" id="search-orders" placeholder="Search orders...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (orders.length > 0) { %>
+                                    <% orders.forEach(order => { %>
+                                        <tr>
+                                            <td>#<%= order._id.toString().slice(-8) %></td>
+                                            <td>
+                                                <div class="customer-info">
+                                                    <% if (order.user && order.user.name) { %>
+                                                        <strong><%= order.user.name %></strong>
+                                                        <span><%= order.user.email %></span>
+                                                    <% } else { %>
+                                                        <strong>[User Deleted]</strong>
+                                                        <span>N/A</span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                            <td><%= order.createdAt.toLocaleDateString() %></td>
+                                            <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                            <td>
+                                                <select class="status-select" data-order-id="<%= order._id %>">
+                                                    <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                                    <option value="confirmed" <%= order.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                                    <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                                                    <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <span class="payment-status <%= order.paymentStatus %>">
+                                                    <%= order.paymentStatus %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn-view" onclick="viewOrder('<%= order._id %>')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7" class="no-data">No orders found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="/admin/orders?page=<%= currentPage - 1 %>" class="page-link">
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </a>
+                            <% } %>
+                            
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <a href="/admin/orders?page=<%= i %>" 
+                                   class="page-link <%= i === currentPage ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/admin/orders?page=<%= currentPage + 1 %>" class="page-link">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../../partials/footer') %>
+    
+    <script>
+        // Update order status
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', async function() {
+                const orderId = this.dataset.orderId;
+                const status = this.value;
+                
+                try {
+                    const response = await fetch(`/admin/orders/${orderId}/status`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Order status updated successfully!', 'success');
+                    } else {
+                        showNotification('Failed to update order status', 'error');
+                        this.value = this.dataset.originalValue;
+                    }
+                } catch (error) {
+                    console.error('Error updating order status:', error);
+                    showNotification('Error updating order status', 'error');
+                    this.value = this.dataset.originalValue;
+                }
+            });
+        });
+
+        function viewOrder(orderId) {
+            // Implement order details view
+            showNotification('Order details feature coming soon!', 'info');
+        }
+
+        // Search functionality
+        document.getElementById('search-orders').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.orders-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

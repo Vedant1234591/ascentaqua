@@ -1,0 +1,39 @@
+<header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <h1><a href="/">Ascent<span>Aqua</span></a></h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/#features">Features</a></li>
+                <li><a href="/#product">Products</a></li>
+                <li><a href="/#sustainability">Sustainability</a></li>
+                <li><a href="/#contact">Contact</a></li>
+                <% if (user && user.email === 'admin@ascentaqua.com') { %>
+                    <li><a href="/admin" class="admin-link">
+                        <i class="fas fa-cog"></i> Admin
+                    </a></li>
+                <% } %>
+                <% if (user) { %>
+                    <li><a href="/cart" class="cart-link">
+                        <i class="fas fa-shopping-cart"></i> Cart 
+                        <% if (cartCount > 0) { %>
+                            <span class="cart-count"><%= cartCount %></span>
+                        <% } %>
+                    </a></li>
+                    <li class="user-menu">
+                        <a href="#"><i class="fas fa-user"></i> <%= user.name %></a>
+                        <ul class="dropdown">
+                            <li><a href="/orders">My Orders</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                <% } else { %>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </nav>
+</header>

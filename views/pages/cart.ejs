@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body><%- include('../partials/header', { title: 'Shopping Cart - AscentAqua' }) %>
+
+<section class="cart-page">
+    <div class="container">
+        <h1>Your Shopping Cart</h1>
+        
+        <% if (cart && cart.length > 0) { %>
+            <div class="cart-items">
+                <% cart.forEach(item => { %>
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            <% if (item.image) { %>
+                                <img src="<%= item.image %>" alt="<%= item.name %>">
+                            <% } else { %>
+                                <div class="placeholder-image">
+                                    <i class="fas fa-wine-bottle"></i>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="cart-item-details">
+                            <h3><%= item.name %></h3>
+                            <p class="item-capacity"><%= item.capacity %></p>
+                            <p class="item-price">$<%= item.price.toFixed(2) %></p>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" data-action="decrease" data-product-id="<%= item.productId %>">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity-<%= item.productId %>" class="quantity-input" 
+                                   value="<%= item.quantity %>" min="1" max="10" readonly>
+                            <button class="quantity-btn" data-action="increase" data-product-id="<%= item.productId %>">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="item-total">
+                            $<%= (item.price * item.quantity).toFixed(2) %>
+                        </div>
+                        <button class="remove-item-btn" data-product-id="<%= item.productId %>">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$<%= total.toFixed(2) %></span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>$2.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>$<%= (total + 2).toFixed(2) %></span>
+                    </div>
+                    <a href="/checkout" class="cta-button" style="width: 100%; text-align: center; display: block;">
+                        Proceed to Checkout
+                    </a>
+                    <a href="/" class="continue-shopping">
+                        <i class="fas fa-arrow-left"></i> Continue Shopping
+                    </a>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="empty-cart">
+                <div class="empty-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h2>Your cart is empty</h2>
+                <p>Looks like you haven't added any items to your cart yet.</p>
+                <a href="/" class="cta-button">Start Shopping</a>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<style>
+.cart-page {
+    padding: 120px 0 80px;
+    min-height: 70vh;
+}
+
+.cart-items {
+    margin-bottom: 40px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.cart-item:hover {
+    transform: translateY(-5px);
+}
+
+.cart-item-image {
+    width: 100px;
+    height: 150px;
+    background: linear-gradient(135deg, #e3f2fd, #1a73e8);
+    border-radius: 10px;
+    margin-right: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.cart-item-details {
+    flex: 1;
+}
+
+.cart-item-details h3 {
+    color: var(--secondary);
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+}
+
+.item-capacity {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.item-price {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0 30px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.quantity-input {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.item-total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--secondary);
+    min-width: 80px;
+    text-align: center;
+}
+
+.remove-item-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 20px;
+    transition: background 0.3s;
+}
+
+.remove-item-btn:hover {
+    background: #ff3742;
+}
+
+.cart-summary {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.summary-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 400px;
+}
+
+.summary-card h3 {
+    color: var(--secondary);
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-row.total {
+    border-bottom: none;
+    border-top: 2px solid var(--primary);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-top: 15px;
+    padding-top: 20px;
+}
+
+.continue-shopping {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.continue-shopping:hover {
+    text-decoration: underline;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-cart-icon {
+    font-size: 80px;
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+.empty-cart h2 {
+    color: var(--secondary);
+    margin-bottom: 15px;
+}
+
+.empty-cart p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .cart-item-image {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .quantity-controls {
+        margin: 20px 0;
+    }
+    
+    .cart-summary {
+        justify-content: center;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %></body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AscentAqua</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../../partials/header', { cartCount: cartCount }) %>
+    
+    <main>
+        <section class="admin-dashboard">
+            <div class="container">
+                <div class="admin-header">
+                    <h1>Admin Dashboard</h1>
+                    <div class="admin-nav">
+                        <a href="/admin" class="nav-link active">Dashboard</a>
+                        <a href="/admin/products" class="nav-link">Products</a>
+                        <a href="/admin/orders" class="nav-link">Orders</a>
+                            <a href="/admin/messages" class="nav-link">Messages</a>
+                        <a href="/" class="nav-link">View Site</a>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><%= stats.totalOrders %></h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-wine-bottle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><%= stats.totalProducts %></h3>
+                            <p>Products</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>$<%= stats.totalRevenue.toFixed(2) %></h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                </div>
+<div class="stat-card">
+    <div class="stat-icon">
+        <i class="fas fa-envelope"></i>
+    </div>
+    <div class="stat-info">
+        <h3><%= stats.totalMessages %></h3>
+        <p>Total Messages</p>
+        <% if (stats.unreadMessages > 0) { %>
+            <small class="unread-count"><%= stats.unreadMessages %> unread</small>
+        <% } %>
+    </div>
+</div>
+                <div class="dashboard-content">
+                    <!-- Recent Orders -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Recent Orders</h2>
+                            <a href="/admin/orders" class="view-all">View All</a>
+                        </div>
+                        <% if (orders.length > 0) { %>
+                            <div class="orders-table">
+                                <% orders.forEach(order => { %>
+                                    <div class="order-row">
+                                        <div class="order-info">
+                                            <strong>#<%= order._id.toString().slice(-8) %></strong>
+                                            <span>
+                                                <% if (order.user && order.user.name) { %>
+                                                    <%= order.user.name %>
+                                                <% } else { %>
+                                                    [User Deleted]
+                                                <% } %>
+                                            </span>
+                                            <span>$<%= order.totalAmount.toFixed(2) %></span>
+                                        </div>
+                                        <div class="order-meta">
+                                            <span class="status <%= order.status %>"><%= order.status %></span>
+                                            <span class="date"><%= order.createdAt.toLocaleDateString() %></span>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-data">No orders found</div>
+                        <% } %>
+                    </div>
+
+                    <!-- Recent Products -->
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Recent Products</h2>
+                            <a href="/admin/products" class="view-all">View All</a>
+                        </div>
+                        <% if (products.length > 0) { %>
+                            <div class="products-grid">
+                                <% products.slice(0, 4).forEach(product => { %>
+                                    <div class="product-card">
+                                        <div class="product-image">
+                                            <i class="fas fa-wine-bottle"></i>
+                                        </div>
+                                        <div class="product-info">
+                                            <h4><%= product.name %></h4>
+                                            <p>$<%= product.price.toFixed(2) %></p>
+                                            <span class="stock <%= product.inStock ? 'in-stock' : 'out-of-stock' %>">
+                                                <%= product.inStock ? 'In Stock' : 'Out of Stock' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-data">No products found</div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../../partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body><%- include('../partials/header', { title: 'Checkout - AscentAqua' }) %>
+
+<section class="checkout-page">
+    <div class="container">
+        <h1>Checkout</h1>
+        
+        <div class="checkout-container">
+            <div class="checkout-form-section">
+                <form id="checkout-form" class="checkout-form">
+                    <h3>Shipping Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required 
+                               value="<%= user ? user.name : '' %>">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="street">Street Address *</label>
+                        <input type="text" id="street" name="street" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State *</label>
+                            <input type="text" id="state" name="state" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="zipCode">ZIP Code *</label>
+                            <input type="text" id="zipCode" name="zipCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country *</label>
+                            <input type="text" id="country" name="country" value="India" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="cta-button" style="width: 100%;">
+                            <i class="fas fa-shopping-bag"></i> Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="order-summary-section">
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    
+                    <div class="order-items">
+                        <% cart.forEach(item => { %>
+                            <div class="order-item">
+                                <div class="item-info">
+                                    <span class="item-name"><%= item.name %></span>
+                                    <span class="item-quantity">Qty: <%= item.quantity %></span>
+                                </div>
+                                <span class="item-price">$<%= (item.price * item.quantity).toFixed(2) %></span>
+                            </div>
+                        <% }) %>
+                    </div>
+                    
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span>$<%= total.toFixed(2) %></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Shipping:</span>
+                            <span>$2.00</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Total:</span>
+                            <span>$<%= (total + 2).toFixed(2) %></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="secure-checkout">
+                    <div class="secure-badge">
+                        <i class="fas fa-lock"></i>
+                        <span>Secure Checkout</span>
+                    </div>
+                    <p>Your payment information is secure and encrypted</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.checkout-page {
+    padding: 120px 0 80px;
+    min-height: 80vh;
+}
+
+.checkout-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    align-items: start;
+}
+
+.checkout-form {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.checkout-form h3 {
+    color: var(--secondary);
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.form-actions {
+    margin-top: 30px;
+}
+
+.order-summary {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.order-summary h3 {
+    color: var(--secondary);
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.order-items {
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.item-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.item-quantity {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.item-price {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.order-totals {
+    border-top: 2px solid #f0f0f0;
+    padding-top: 15px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.grand-total {
+    border-top: 2px solid var(--primary);
+    margin-top: 10px;
+    padding-top: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+.secure-checkout {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.secure-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: #28a745;
+    font-weight: 600;
+}
+
+@media (max-width: 968px) {
+    .checkout-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .order-summary-section {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %></body>
+</html>

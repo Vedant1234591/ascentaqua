@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <%- include('../partials/header', { cartCount: cartCount }) %>
+    
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="container">
+                <h2>Pure Hydration, Elevated</h2>
+                <p>Experience the perfect balance of purity and sustainability with AscentAqua's premium water bottle. Crafted for those who appreciate quality and design.</p>
+                <button class="cta-button" onclick="scrollToProduct()">Discover AscentAqua</button>
+                
+                <!-- Animated Bottle -->
+                <div class="bottle-container">
+                    <div class="bottle">
+                        <div class="bottle-body">
+                            <div class="water"></div>
+                            <div class="label">ASCENT<br>aqua</div>
+                            <div class="cap"></div>
+                        </div>
+                        <div class="bottle-base"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Why Choose AscentAqua</h2>
+                    <p>Discover what makes our premium water bottle stand out from the rest</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <h3>Ultra-Pure Water</h3>
+                        <p>Our advanced filtration process ensures you get the purest water with essential minerals preserved.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-recycle"></i>
+                        </div>
+                        <h3>Eco-Friendly Design</h3>
+                        <p>Made with sustainable materials and designed to be easily recyclable after use.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <h3>Perfect Portability</h3>
+                        <p>With its ergonomic design and 750ml capacity, it's the perfect companion for your active lifestyle.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Details -->
+        <section class="product-details" id="product">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Our Premium Product</h2>
+                    <p>Experience hydration like never before</p>
+                </div>
+                <div class="product-container">
+                    <div class="product-image">
+                        <div class="bottle-container">
+                            <div class="bottle animated-bottle">
+                                <div class="bottle-body">
+                                    <div class="water"></div>
+                                    <div class="label">ASCENT<br>aqua<br>750ml</div>
+                                    <div class="cap"></div>
+                                </div>
+                                <div class="bottle-base"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h2>AscentAqua 750ml</h2>
+                        <p>Experience hydration like never before with our premium 750ml water bottle. Meticulously designed to offer both style and functionality, AscentAqua is the perfect choice for health-conscious individuals who value quality and sustainability.</p>
+                        <p>Our bottle features a sleek, ergonomic design that fits comfortably in your hand and most cup holders. The durable construction ensures your water stays pure and refreshing, while the eco-friendly materials make it a responsible choice for our planet.</p>
+                        <div class="specs">
+                            <h3>Product Specifications</h3>
+                            <ul class="specs-list">
+                                <li><i class="fas fa-check"></i> Capacity: 750ml</li>
+                                <li><i class="fas fa-check"></i> Material: Premium PVC</li>
+                                <li><i class="fas fa-check"></i> Weight: 126g (empty)</li>
+                                <li><i class="fas fa-check"></i> Dimensions: 242mm height × 55mm width</li>
+                                <li><i class="fas fa-check"></i> Color: Black passage plastic white</li>
+                                <li><i class="fas fa-check"></i> BPA Free & Recyclable</li>
+                            </ul>
+                        </div>
+                        <div class="price-section">
+                            <div class="price">$5.00</div>
+                            <div class="add-to-cart">
+                                <div class="quantity-control">
+                                    <label for="quantity">Quantity:</label>
+                                    <input type="number" id="quantity" value="1" min="1" max="10">
+                                </div>
+                                <% if (products.length > 0) { %>
+                                    <button class="cta-button add-to-cart-btn" data-product-id="<%= products[0]._id %>">
+                                        Add to Cart
+                                    </button>
+                                <% } else { %>
+                                    <button class="cta-button add-to-cart-btn" data-product-id="ascentaqua-750ml">
+                                        Add to Cart
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sustainability -->
+        <section class="sustainability" id="sustainability">
+            <div class="container">
+                <div class="sustainability-content">
+                    <div class="sustainability-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h2>Our Commitment to Sustainability</h2>
+                    <p>At AscentAqua, we believe in protecting our planet while providing premium hydration. That's why we've designed our bottles with sustainability at the forefront.</p>
+                    <p>Our "Crush the Bottle After Use" initiative encourages proper recycling and reduces environmental impact. The bottle is made from recyclable PVC materials and is manufactured with eco-conscious processes that minimize our carbon footprint.</p>
+                    <p>By choosing AscentAqua, you're not just choosing better hydration - you're making a choice that benefits our planet.</p>
+                    <button class="cta-button">Learn More About Our Initiatives</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="contact" id="contact">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Get In Touch</h2>
+                    <p>Have questions? We'd love to hear from you</p>
+                </div>
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h3>Contact Information</h3>
+                        <div class="contact-details">
+                            <div>
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Ambient Boost, Bronghagam, Chambigarate, Borguosa, Klemung, Nayarama</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone"></i>
+                                <span>Constance Care No: 7005254800</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-envelope"></i>
+                                <span>sunshine@sunshine.com | 126gmail.com</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-id-card"></i>
+                                <span>FSSAI Lic.No.: 10325002000057</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h3>Send Us a Message</h3>
+                        <form id="contact-form">
+                            <div class="form-group">
+                                <label for="name">Your Name</label>
+                                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Your Email</label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Your Message</label>
+                                <textarea id="message" name="message" placeholder="Enter your message" required></textarea>
+                            </div>
+                            <button type="submit" class="cta-button" style="width: 100%;">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+    
+    <script>
+        function scrollToProduct() {
+            document.getElementById('product').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+// Contact form handling
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        const response = await fetch('/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            this.reset();
+        } else {
+            showNotification(result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Contact form error:', error);
+        showNotification('Error sending message. Please try again.', 'error');
+    }
+});
+        // Contact form handling
+        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            this.reset();
+        });
+
+        // Add to cart functionality
+        document.querySelector('.add-to-cart-btn')?.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const quantity = document.getElementById('quantity').value;
+            alert(`Added ${quantity} item(s) to cart!`);
+            // You can add actual cart functionality later
+        });
+    </script>
+</body>
+</html>

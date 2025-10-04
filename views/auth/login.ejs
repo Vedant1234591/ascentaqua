@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body><%- include('../partials/header', { title: 'Login - AscentAqua' }) %>
+
+<section class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your AscentAqua account</p>
+            
+            <% if (error) { %>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <%= error %>
+                </div>
+            <% } %>
+            
+            <form method="POST" action="/login" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="cta-button" style="width: 100%;">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a href="/register">Create one here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.auth-page {
+    padding: 120px 0 80px;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.auth-card h1 {
+    color: var(--secondary);
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.auth-card p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.auth-form {
+    text-align: left;
+}
+
+.auth-links {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.auth-links a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+</style>
+<script src="/js/auth.js"></script>
+<%- include('../partials/footer') %>
+</body>
+</html>

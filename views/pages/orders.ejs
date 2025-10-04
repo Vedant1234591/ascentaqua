@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AscentAqua - Premium Water Bottle</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body><%- include('../partials/header', { title: 'My Orders - AscentAqua' }) %>
+
+<section class="orders-page">
+    <div class="container">
+        <h1>My Orders</h1>
+        
+        <% if (orders && orders.length > 0) { %>
+            <div class="orders-list">
+                <% orders.forEach(order => { %>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>Order #<%= order._id.toString().slice(-8) %></h3>
+                                <p class="order-date">Placed on <%= order.createdAt.toLocaleDateString() %></p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge <%= order.status %>"><%= order.status %></span>
+                                <span class="order-total">$<%= order.totalAmount.toFixed(2) %></span>
+                            </div>
+                        </div>
+                        
+                        <div class="order-items-preview">
+                            <% order.items.slice(0, 2).forEach(item => { %>
+                                <div class="preview-item">
+                                    <span class="item-name"><%= item.name %></span>
+                                    <span class="item-quantity">Qty: <%= item.quantity %></span>
+                                </div>
+                            <% }) %>
+                            <% if (order.items.length > 2) { %>
+                                <div class="more-items">+<%= order.items.length - 2 %> more items</div>
+                            <% } %>
+                        </div>
+                        
+                        <div class="order-actions">
+                            <a href="#" class="view-details-btn">View Details</a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="no-orders">
+                <div class="no-orders-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h2>No Orders Yet</h2>
+                <p>You haven't placed any orders with us yet.</p>
+                <a href="/" class="cta-button">Start Shopping</a>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<style>
+.orders-page {
+    padding: 120px 0 80px;
+    min-height: 70vh;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease;
+}
+
+.order-card:hover {
+    transform: translateY(-3px);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.order-info h3 {
+    color: var(--secondary);
+    margin-bottom: 5px;
+    font-size: 1.3rem;
+}
+
+.order-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.order-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.status-badge {
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.confirmed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.shipped {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.delivered {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.order-total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+.order-items-preview {
+    margin-bottom: 20px;
+}
+
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 500;
+}
+
+.item-quantity {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.more-items {
+    text-align: center;
+    color: var(--primary);
+    font-weight: 500;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.order-actions {
+    text-align: right;
+}
+
+.view-details-btn {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+
+.view-details-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.no-orders-icon {
+    font-size: 80px;
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+.no-orders h2 {
+    color: var(--secondary);
+    margin-bottom: 15px;
+}
+
+.no-orders p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .order-status {
+        flex-direction: row;
+        align-items: center;
+        gap: 15px;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %></body>
+</html>
