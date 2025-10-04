@@ -492,13 +492,56 @@ app.post('/admin/products/:id', requireAdmin, upload.single('image'), [
 });
 
 // Delete Product
+// Delete Product
 app.post('/admin/products/:id/delete', requireAdmin, async (req, res) => {
     try {
-        await Product.findByIdAndDelete(req.params.id);
-        res.json({ success: true });
+        const productId = req.params.id;
+        console.log('Attempting to delete product:', productId);
+
+        // Check if ID is provided
+        if (!productId) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Product ID is required' 
+            });
+        }
+
+        // Check if ID is valid MongoDB ObjectId
+        const mongoose = require('mongoose');
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Invalid product ID format' 
+            });
+        }
+
+        const deletedProduct = await Product.findByIdAndDelete(productId);
+        
+        console.log('Delete result:', deletedProduct);
+        
+        if (!deletedProduct) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Product not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Product deleted successfully',
+            deletedProduct: {
+                id: deletedProduct._id,
+                name: deletedProduct.name
+            }
+        });
+        
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to delete product' });
+        console.error('Delete product error:', error);
+        res.status(500).json({ 
+            success: false,
+            error: 'Failed to delete product',
+            details: error.message 
+        });
     }
 });
 const Message = require('./models/Message');

@@ -74,12 +74,38 @@
     <%- include('../../partials/footer') %>
     
     <script>
-        function deleteProduct(productId) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                alert('Product deletion would happen here with ID: ' + productId);
-                // Implement actual deletion later
+    async function deleteProduct(productId) {
+        if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+            try {
+                console.log('Deleting product with ID:', productId);
+                
+                const response = await fetch(`/admin/products/${productId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include' // Important for sessions/cookies
+                });
+
+                const result = await response.json();
+                console.log('Delete response:', result);
+
+                if (result.success) {
+                    alert('Product deleted successfully!');
+                    // Remove the product card from UI or reload the page
+                    location.reload(); // Simple solution - reload the page
+                    // Alternatively, you can remove the specific product card without reloading:
+                    // const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+                    // if (productCard) productCard.remove();
+                } else {
+                    alert('Failed to delete product: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product. Please try again.');
             }
         }
-    </script>
+    }
+</script>
 </body>
 </html>
