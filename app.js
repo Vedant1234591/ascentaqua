@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
-const path = require('path');
+const path = require('path');const flash = require('express-flash');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +26,7 @@ const Order = require('./models/Order');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
 
 // Session Configuration
 app.use(session({
@@ -61,6 +62,61 @@ const requireAuth = (req, res, next) => {
     }
     next();
 };
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
+
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure multer with Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'ascentaqua-products',
+    format: async (req, file) => 'png',
+    public_id: (req, file) => {
+      const timestamp = Date.now();
+      return `product-${timestamp}`;
+    },
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Add this main index route to fetch products
+// Main index route - Fetch products for display
+app.get('/', async (req, res) => {
+    try {
+        console.log('Fetching products for index page...');
+        
+        // Fetch all in-stock products, sorted by newest first
+        const products = await Product.find({ inStock: true }).sort({ createdAt: -1 }).limit(3);
+        
+        console.log('Products found:', products.length);
+        products.forEach(product => {
+            console.log(`Product: ${product.name}, Image: ${product.image}`);
+        });
+        
+        res.render('pages/index', {
+            products: products, // Make sure this is passed correctly
+            cartCount: req.session.cart ? req.session.cart.length : 0
+        });
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        // Render with empty products array if there's an error
+        res.render('pages/index', {
+            products: [],
+            cartCount: req.session.cart ? req.session.cart.length : 0
+        });
+    }
+});
+
 
 // ========== ROUTES ========== //
 
@@ -262,7 +318,100 @@ app.post('/admin/orders/:id/status', requireAdmin, async (req, res) => {
     }
 });
 
-// Admin Products
+
+app.get('/admin/products/create', requireAdmin, (req, res) => {
+    res.render('pages/admin/product-form', {
+        user: req.session.user,
+        product: null,
+        errors: [],
+        formData: {},
+        cartCount: 0,
+        messages: {} // Add empty messages object
+    });
+});
+
+// Edit Product Page - Fixed
+app.get('/admin/products/:id/edit', requireAdmin, async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.redirect('/admin/products');
+        }
+        res.render('pages/admin/product-form', {
+            user: req.session.user,
+            product: product,
+            errors: [],
+            formData: {},
+            cartCount: 0,
+            messages: {} // Add empty messages object
+        });
+    } catch (error) {
+        console.error(error);
+        res.redirect('/admin/products');
+    }
+});
+
+// Create Product - Fixed
+// Create Product with Cloudinary - Debug version
+app.post('/admin/products', requireAdmin, upload.single('image'), [
+    // your validation rules
+], async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        return res.render('pages/admin/product-form', {
+            user: req.session.user,
+            product: null,
+            errors: errors.array(),
+            formData: req.body,
+            cartCount: 0
+        });
+    }
+
+    try {
+        const productData = { ...req.body };
+        
+        // Handle features array
+        if (productData.features) {
+            if (typeof productData.features === 'string') {
+                productData.features = productData.features.split(',').map(f => f.trim()).filter(f => f);
+            }
+        }
+        
+        // Debug Cloudinary upload
+        console.log('File upload info:', req.file);
+        
+        // Handle Cloudinary image - IMPORTANT: req.file.path contains the Cloudinary URL
+        if (req.file) {
+            productData.image = req.file.path;
+            console.log('Cloudinary URL stored:', productData.image);
+        } else {
+            console.log('No image file uploaded');
+        }
+        
+        // Convert inStock to boolean
+        productData.inStock = productData.inStock === 'true';
+        
+        const product = new Product(productData);
+        await product.save();
+        
+        console.log('Product saved to database:', product);
+        
+        req.flash('success_msg', 'Product created successfully!');
+        res.redirect('/admin/products');
+    } catch (error) {
+        console.error('Error creating product:', error);
+        res.render('pages/admin/product-form', {
+            user: req.session.user,
+            product: null,
+            errors: [{ msg: 'Error creating product: ' + error.message }],
+            formData: req.body,
+            cartCount: 0
+        });
+    }
+});
+
+
 app.get('/admin/products', requireAdmin, async (req, res) => {
     try {
         const products = await Product.find().sort({ createdAt: -1 });
@@ -278,89 +427,21 @@ app.get('/admin/products', requireAdmin, async (req, res) => {
         });
     }
 });
+
 // Create Product Page
-app.get('/admin/products/create', requireAdmin, (req, res) => {
-    res.render('pages/admin/product-form', {
-        user: req.session.user,
-        product: null,
-        errors: [],
-        formData: {},
-        cartCount: 0
-    });
-});
 
-// Edit Product Page
-app.get('/admin/products/:id/edit', requireAdmin, async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product) {
-            return res.redirect('/admin/products');
-        }
-        res.render('pages/admin/product-form', {
-            user: req.session.user,
-            product: product,
-            errors: [],
-            formData: {},
-            cartCount: 0
-        });
-    } catch (error) {
-        console.error(error);
-        res.redirect('/admin/products');
-    }
-});
-// Edit Product Page - Fix missing variables
 
-// Create Product - Fix error handling
-app.post('/admin/products', requireAdmin, [
+
+// Update Product with Cloudinary
+app.post('/admin/products/:id', requireAdmin, upload.single('image'), [
     body('name').notEmpty().withMessage('Product name is required'),
     body('description').notEmpty().withMessage('Description is required'),
     body('price').isFloat({ min: 0 }).withMessage('Valid price is required'),
-    body('capacity').notEmpty().withMessage('Capacity is required')
-], async (req, res) => {
-    const errors = validationResult(req);
-    
-    if (!errors.isEmpty()) {
-        return res.render('pages/admin/product-form', {
-            user: req.session.user,
-            product: null,
-            errors: errors.array(),
-            formData: req.body,
-            cartCount: 0
-        });
-    }
-
-    try {
-        // Handle features array
-        const productData = { ...req.body };
-        if (productData.features) {
-            if (typeof productData.features === 'string') {
-                productData.features = productData.features.split(',').map(f => f.trim()).filter(f => f);
-            }
-        }
-        
-        const product = new Product(productData);
-        await product.save();
-        
-       
-        res.redirect('/admin/products');
-    } catch (error) {
-        console.error(error);
-        res.render('pages/admin/product-form', {
-            user: req.session.user,
-            product: null,
-            errors: [{ msg: 'Error creating product: ' + error.message }],
-            formData: req.body,
-            cartCount: 0
-        });
-    }
-});
-
-// Update Product - Fix error handling
-app.post('/admin/products/:id', requireAdmin, [
-    body('name').notEmpty().withMessage('Product name is required'),
-    body('description').notEmpty().withMessage('Description is required'),
-    body('price').isFloat({ min: 0 }).withMessage('Valid price is required'),
-    body('capacity').notEmpty().withMessage('Capacity is required')
+    body('capacity').notEmpty().withMessage('Capacity is required'),
+    body('material').notEmpty().withMessage('Material is required'),
+    body('weight').notEmpty().withMessage('Weight is required'),
+    body('dimensions').notEmpty().withMessage('Dimensions are required'),
+    body('color').notEmpty().withMessage('Color is required')
 ], async (req, res) => {
     const errors = validationResult(req);
     
@@ -376,13 +457,22 @@ app.post('/admin/products/:id', requireAdmin, [
     }
 
     try {
-        // Handle features array
         const productData = { ...req.body };
+        
+        // Handle features array
         if (productData.features) {
             if (typeof productData.features === 'string') {
                 productData.features = productData.features.split(',').map(f => f.trim()).filter(f => f);
             }
         }
+        
+        // Handle Cloudinary image
+        if (req.file) {
+            productData.image = req.file.path;
+        }
+        
+        // Convert inStock to boolean
+        productData.inStock = productData.inStock === 'true';
         
         await Product.findByIdAndUpdate(req.params.id, productData);
         
@@ -494,25 +584,6 @@ app.post('/admin/messages/:id/delete', requireAdmin, async (req, res) => {
     }
 });
 // Home Page Route - Fix this
-app.get('/', async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.render('pages/index', { 
-            user: req.session.user,
-            cart: req.session.cart || [],
-            products,
-            cartCount: req.session.cart ? req.session.cart.length : 0
-        });
-    } catch (error) {
-        console.error(error);
-        res.render('pages/index', { 
-            user: req.session.user,
-            cart: [],
-            products: [], 
-            cartCount: 0 
-        });
-    }
-});
 
 // Auth Routes
 app.get('/login', (req, res) => {
